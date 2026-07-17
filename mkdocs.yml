@@ -1,0 +1,12 @@
+site_name: EvoForge
+site_description: Extensible Framework for Simulation-Based Optimization using Evolutionary Computation and Surrogate Models
+site_author: Alan Diaz Manriquez
+
+docs_dir: docs
+
+theme:
+  name: material
+
+nav:
+  - Home: 00_Project_Vision.md
+  - Project Principles: 01_Project_Principles.md
