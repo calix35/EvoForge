@@ -137,25 +137,29 @@ wheels = [
 name = "evoforge"
 version = "0.1.0"
 source = { editable = "." }
+dependencies = [
+    { name = "pydantic" },
+    { name = "pyyaml" },
+]
 
 [package.dev-dependencies]
 dev = [
     { name = "mkdocs-material" },
-    { name = "pydantic" },
     { name = "pytest" },
-    { name = "pyyaml" },
     { name = "ruff" },
     { name = "typer" },
 ]
 
 [package.metadata]
+requires-dist = [
+    { name = "pydantic" },
+    { name = "pyyaml" },
+]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "mkdocs-material" },
-    { name = "pydantic" },
     { name = "pytest" },
-    { name = "pyyaml" },
     { name = "ruff" },
     { name = "typer" },
 ]

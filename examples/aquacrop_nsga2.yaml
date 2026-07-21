@@ -1,0 +1,62 @@
+experiment:
+  name: aquacrop_nsga2_baseline
+  description: Baseline simulation-based optimization experiment using AquaCrop and NSGA-II.
+  seed: 42
+
+problem:
+  name: irrigation_management
+  type: multi_objective
+  variables:
+    - name: irrigation_day_1
+      type: continuous
+      bounds: [0.0, 40.0]
+      unit: mm
+    - name: irrigation_day_2
+      type: continuous
+      bounds: [0.0, 40.0]
+      unit: mm
+  objectives:
+    - name: yield
+      direction: maximize
+    - name: water_use
+      direction: minimize
+  constraints: []
+
+optimizer:
+  plugin: pymoo.nsga2
+  parameters:
+    population_size: 100
+    generations: 200
+
+evaluator:
+  type: simulator
+  simulator:
+    plugin: aquacrop_ospy
+    parameters:
+      weather_file: data/weather.csv
+      soil_profile: data/soil.yaml
+
+surrogate:
+  enabled: false
+
+outputs:
+  directory: results/aquacrop_nsga2_baseline
+  save_evaluations: true
+  save_metadata: true
+  save_figures: true
+
+analysis:
+  enabled: true
+  methods:
+    - descriptive_statistics
+
+visualization:
+  enabled: true
+  plots:
+    - convergence
+    - pareto_front
+
+report:
+  enabled: true
+  format: markdown
+

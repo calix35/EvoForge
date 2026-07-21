@@ -12,14 +12,15 @@ license = { text = "MIT" }
 authors = [
   { name = "Alan Diaz Manriquez" },
 ]
-dependencies = []
+dependencies = [
+  "pydantic",
+  "pyyaml",
+]
 
 [dependency-groups]
 dev = [
   "mkdocs-material",
-  "pydantic",
   "pytest",
-  "pyyaml",
   "ruff",
   "typer",
 ]
@@ -35,4 +36,3 @@ src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
-
