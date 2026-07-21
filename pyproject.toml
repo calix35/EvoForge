@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "evoforge"
+version = "0.1.0"
+description = "Extensible framework for simulation-based optimization with evolutionary computation and surrogate models."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+  { name = "Alan Diaz Manriquez" },
+]
+dependencies = []
+
+[dependency-groups]
+dev = [
+  "mkdocs-material",
+  "pydantic",
+  "pytest",
+  "pyyaml",
+  "ruff",
+  "typer",
+]
+
+[tool.pytest.ini_options]
+addopts = ["-ra"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
