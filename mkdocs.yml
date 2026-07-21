@@ -7,6 +7,24 @@ docs_dir: docs
 theme:
   name: material
 
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
 nav:
-  - Home: 00_Project_Vision.md
+  - Home: index.md
+  - Project Vision: 00_Project_Vision.md
   - Project Principles: 01_Project_Principles.md
+  - System Requirements: 02_System_Requirements.md
+  - Domain Model: 03_Domain_Model.md
+  - Architecture Overview: 04_Architecture_Overview.md
+  - API Design: 05_API_Design.md
+  - Implementation Plan: 06_Implementation_Plan.md
+  - Architecture Decisions:
+      - ADR Template: 04_Architecture_Decisions/ADR-0000-template.md
+      - ADR-0001 Plugin-First Architecture: 04_Architecture_Decisions/ADR-0001-plugin-first.md
+      - ADR-0002 Configuration Management: 04_Architecture_Decisions/ADR-0002-configuration-management.md
+      - ADR-0003 Dependency Management: 04_Architecture_Decisions/ADR-0003-dependency-management.md

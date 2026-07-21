@@ -1,0 +1,63 @@
+%% EVF-DGM-0002
+%% Domain Model Diagram for EvoForge
+%% Purpose: Show the main domain entities and their conceptual relationships.
+
+flowchart TB
+    config["Experiment Configuration"]
+    experiment["Experiment"]
+    problem["Problem"]
+    decision_variables["Decision Variables"]
+    objectives["Objectives"]
+    constraints["Constraints"]
+    optimizer["Optimizer"]
+    population["Population"]
+    individual["Individual"]
+    solution["Solution"]
+    evaluation_provider["Evaluation Provider"]
+    simulator["Simulator"]
+    surrogate["Surrogate Model"]
+    evaluation_record["Evaluation Record"]
+    dataset["Dataset"]
+    statistics["Statistical Analysis"]
+    visualization["Visualization"]
+    report["Report"]
+
+    config -->|"defines"| experiment
+
+    experiment -->|"uses"| problem
+    experiment -->|"uses"| optimizer
+    experiment -->|"uses"| evaluation_provider
+    experiment -->|"may use"| surrogate
+    experiment -->|"produces"| dataset
+    experiment -->|"produces"| statistics
+    experiment -->|"produces"| visualization
+    experiment -->|"produces"| report
+
+    problem -->|"defines"| decision_variables
+    problem -->|"defines"| objectives
+    problem -->|"may define"| constraints
+
+    optimizer -->|"operates on"| problem
+    optimizer -->|"generates"| solution
+    optimizer -->|"may maintain"| population
+    population -->|"contains"| individual
+    individual -->|"represents"| solution
+
+    solution -->|"is evaluated by"| evaluation_provider
+    evaluation_provider -->|"may wrap"| simulator
+    evaluation_provider -->|"may use"| surrogate
+    evaluation_provider -->|"produces"| evaluation_record
+
+    simulator -->|"computes expensive outputs"| evaluation_record
+    surrogate -->|"predicts approximate outputs"| evaluation_record
+
+    evaluation_record -->|"records values for"| objectives
+    evaluation_record -->|"records status of"| constraints
+    evaluation_record -->|"is stored in"| dataset
+
+    dataset -->|"trains / validates"| surrogate
+    dataset -->|"feeds"| statistics
+    dataset -->|"feeds"| visualization
+
+    statistics -->|"summarized in"| report
+    visualization -->|"included in"| report

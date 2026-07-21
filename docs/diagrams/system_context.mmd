@@ -1,0 +1,61 @@
+%% EVF-DGM-0001
+%% System Context Diagram for EvoForge
+%% Purpose: Define the boundary between EvoForge and external systems.
+
+flowchart TB
+    researcher["Researcher / Graduate Student"]
+
+    subgraph evoforge_boundary["EvoForge Framework"]
+        core["Core Orchestration Layer"]
+        config["Configuration & Reproducibility"]
+        data["Experiment Data Management"]
+        plugins["Plugin / Adapter Interfaces"]
+
+        core --> config
+        core --> data
+        core --> plugins
+    end
+
+    subgraph optimization_tools["Optimization Libraries"]
+        pymoo["pymoo"]
+        other_optimizers["Other Optimizer Libraries"]
+    end
+
+    subgraph ml_tools["Machine Learning Libraries"]
+        sklearn["scikit-learn"]
+        xgboost["XGBoost"]
+        lightgbm["LightGBM"]
+        catboost["CatBoost"]
+        pytorch["PyTorch"]
+    end
+
+    subgraph simulators["Simulation Environments"]
+        aquacrop["AquaCrop-OSPy"]
+        energyplus["EnergyPlus"]
+        sumo["SUMO"]
+        openmodelica["OpenModelica"]
+        other_simulators["Other External Simulators"]
+    end
+
+    subgraph analysis_tools["Analysis & Visualization Tools"]
+        scipy["SciPy / scikit-posthocs"]
+        pandas["pandas / NumPy"]
+        matplotlib["Matplotlib"]
+        plotly["Plotly"]
+    end
+
+    outputs["Experiment Results / Reports / Figures"]
+
+    researcher -->|"Defines experiments"| core
+    core -->|"Produces"| outputs
+    outputs -->|"Supports interpretation"| researcher
+
+    plugins -->|"Optimizer adapters"| optimization_tools
+    plugins -->|"Surrogate adapters"| ml_tools
+    plugins -->|"Simulator adapters"| simulators
+    plugins -->|"Analysis and visualization adapters"| analysis_tools
+
+    optimization_tools -->|"Candidate solutions"| plugins
+    ml_tools -->|"Predictions / uncertainty estimates"| plugins
+    simulators -->|"Expensive evaluations"| plugins
+    analysis_tools -->|"Statistics / visualizations"| plugins
