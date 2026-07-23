@@ -15,6 +15,7 @@ from evoforge.config import (
     VariableConfig,
     load_experiment_config,
 )
+from evoforge.data import OutputManager
 from evoforge.domain import (
     Constraint,
     Dataset,
@@ -45,6 +46,7 @@ class ExperimentResult:
     status: ExperimentStatus
     output_directory: str
     reproducibility_metadata: dict[str, Any] = field(default_factory=dict)
+    artifact_paths: dict[str, str | None] = field(default_factory=dict)
     records: tuple[EvaluationRecord, ...] = field(default_factory=tuple)
     raw_result: Any | None = None
 
@@ -86,6 +88,13 @@ class Experiment:
 
             evaluator = self._build_evaluator()
             raw_result = optimizer.optimize(problem, evaluator)
+            records = _extract_records(raw_result)
+            metadata = self._reproducibility_metadata()
+            artifacts = OutputManager(self.config.outputs.directory).save_run_outputs(
+                config=self.config,
+                metadata=metadata,
+                records=records,
+            )
         except Exception:
             self.status = ExperimentStatus.FAILED
             raise
@@ -95,16 +104,31 @@ class Experiment:
             experiment_id=self.config.experiment.name,
             status=self.status,
             output_directory=self.config.outputs.directory,
-            reproducibility_metadata={"seed": self.config.experiment.seed},
-            records=_extract_records(raw_result),
+            reproducibility_metadata=metadata,
+            artifact_paths=artifacts.as_dict(),
+            records=records,
             raw_result=raw_result,
         )
+
+    def _reproducibility_metadata(self) -> dict[str, Any]:
+        simulator_plugin = (
+            self.config.evaluator.simulator.plugin
+            if self.config.evaluator.simulator is not None
+            else None
+        )
+        return {
+            "experiment_id": self.config.experiment.name,
+            "seed": self.config.experiment.seed,
+            "optimizer_plugin": self.config.optimizer.plugin,
+            "evaluator_type": self.config.evaluator.type,
+            "simulator_plugin": simulator_plugin,
+        }
 
     def _build_evaluator(self) -> SimulatorPlugin:
         if self.config.evaluator.type != "simulator":
             msg = (
                 "The minimal Experiment runtime only supports simulator "
-                "evaluators in Milestone 4."
+                "evaluators in this initial implementation."
             )
             raise NotImplementedError(msg)
 

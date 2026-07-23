@@ -40,7 +40,7 @@ class FakeSimulator:
         )
 
 
-def valid_config_data() -> dict[str, Any]:
+def valid_config_data(output_directory: str = "results/minimal_run") -> dict[str, Any]:
     return {
         "experiment": {"name": "minimal_run", "seed": 42},
         "problem": {
@@ -58,12 +58,12 @@ def valid_config_data() -> dict[str, Any]:
             "type": "simulator",
             "simulator": {"plugin": "fake.simulator"},
         },
-        "outputs": {"directory": "results/minimal_run"},
+        "outputs": {"directory": output_directory},
     }
 
 
-def make_config() -> ExperimentConfig:
-    return ExperimentConfig.model_validate(valid_config_data())
+def make_config(output_directory: str = "results/minimal_run") -> ExperimentConfig:
+    return ExperimentConfig.model_validate(valid_config_data(output_directory))
 
 
 def make_registry() -> PluginRegistry:
@@ -107,8 +107,13 @@ def test_creating_experiment_from_yaml_using_from_config(tmp_path: Path) -> None
     assert experiment.registry is registry
 
 
-def test_running_minimal_workflow_with_fake_optimizer_and_simulator() -> None:
-    experiment = Experiment(config=make_config(), registry=make_registry())
+def test_running_minimal_workflow_with_fake_optimizer_and_simulator(
+    tmp_path: Path,
+) -> None:
+    experiment = Experiment(
+        config=make_config(str(tmp_path / "minimal_run")),
+        registry=make_registry(),
+    )
 
     result = experiment.run()
 
@@ -130,11 +135,48 @@ def test_missing_optimizer_plugin_error() -> None:
     assert experiment.status is ExperimentStatus.FAILED
 
 
-def test_result_includes_status_output_directory_and_seed_metadata() -> None:
-    experiment = Experiment(config=make_config(), registry=make_registry())
+def test_result_includes_status_output_directory_and_seed_metadata(
+    tmp_path: Path,
+) -> None:
+    output_directory = tmp_path / "minimal_run"
+    experiment = Experiment(
+        config=make_config(str(output_directory)),
+        registry=make_registry(),
+    )
 
     result = experiment.run()
 
     assert result.status is ExperimentStatus.COMPLETED
-    assert result.output_directory == "results/minimal_run"
+    assert result.output_directory == str(output_directory)
     assert result.reproducibility_metadata["seed"] == 42
+
+
+def test_run_creates_deterministic_output_artifacts_using_fake_plugins(
+    tmp_path: Path,
+) -> None:
+    output_directory = tmp_path / "minimal_run"
+    experiment = Experiment(
+        config=make_config(str(output_directory)),
+        registry=make_registry(),
+    )
+
+    result = experiment.run()
+
+    expected_paths = {
+        "output_directory": str(output_directory),
+        "config": str(output_directory / "config.json"),
+        "metadata": str(output_directory / "metadata.json"),
+        "evaluation_records": str(output_directory / "evaluation_records.json"),
+        "manifest": str(output_directory / "manifest.json"),
+    }
+    assert result.artifact_paths == expected_paths
+    for path in expected_paths.values():
+        assert path is not None
+        assert Path(path).exists()
+
+    manifest = yaml.safe_load((output_directory / "manifest.json").read_text())
+    assert [artifact["name"] for artifact in manifest["artifacts"]] == [
+        "config",
+        "metadata",
+        "evaluation_records",
+    ]
