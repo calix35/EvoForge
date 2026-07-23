@@ -140,6 +140,7 @@ source = { editable = "." }
 dependencies = [
     { name = "pydantic" },
     { name = "pyyaml" },
+    { name = "typer" },
 ]
 
 [package.dev-dependencies]
@@ -147,13 +148,13 @@ dev = [
     { name = "mkdocs-material" },
     { name = "pytest" },
     { name = "ruff" },
-    { name = "typer" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "pydantic" },
     { name = "pyyaml" },
+    { name = "typer" },
 ]
 
 [package.metadata.requires-dev]
@@ -161,7 +162,6 @@ dev = [
     { name = "mkdocs-material" },
     { name = "pytest" },
     { name = "ruff" },
-    { name = "typer" },
 ]
 
 [[package]]

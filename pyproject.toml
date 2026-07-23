@@ -15,14 +15,17 @@ authors = [
 dependencies = [
   "pydantic",
   "pyyaml",
+  "typer",
 ]
+
+[project.scripts]
+evoforge = "evoforge.cli:main"
 
 [dependency-groups]
 dev = [
   "mkdocs-material",
   "pytest",
   "ruff",
-  "typer",
 ]
 
 [tool.pytest.ini_options]
