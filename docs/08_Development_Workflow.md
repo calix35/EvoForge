@@ -65,6 +65,20 @@ uv run mkdocs serve
 
 ---
 
+## Continuous Integration
+
+GitHub Actions runs the same core validation workflow on pushes and pull requests to `main`:
+
+```bash
+uv run pytest
+uv run ruff check .
+uv run mkdocs build --strict
+```
+
+Contributors should run these commands locally before committing changes.
+
+---
+
 ## Running the MVP Example
 
 Run the built-in random-search sphere example:
