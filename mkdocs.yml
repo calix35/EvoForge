@@ -23,6 +23,7 @@ nav:
   - Architecture Overview: 04_Architecture_Overview.md
   - API Design: 05_API_Design.md
   - Implementation Plan: 06_Implementation_Plan.md
+  - MVP Architecture Review: 07_MVP_Architecture_Review.md
   - Architecture Decisions:
       - ADR Template: 04_Architecture_Decisions/ADR-0000-template.md
       - ADR-0001 Plugin-First Architecture: 04_Architecture_Decisions/ADR-0001-plugin-first.md
