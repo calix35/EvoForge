@@ -10,10 +10,11 @@ Current phase:
 - MVP architecture prototype completed.
 - Developer documentation completed.
 - CI validation workflow added.
+- MIT license added.
+- Internal MVP release checklist in progress.
 
 Next phase:
 
-- Prepare internal MVP release checklist.
 - Stabilize documentation for Product 1.
 - Prepare first architecture article outline.
 

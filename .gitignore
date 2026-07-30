@@ -21,6 +21,9 @@ env/
 # Logs
 *.log
 
+# Generated experiment outputs
+results/
+
 # Test cache
 .pytest_cache/
 .ruff_cache/

@@ -75,8 +75,8 @@ First functional architecture prototype for EvoForge.
 - [x] MVP architecture review documented.
 - [x] Development workflow documented.
 - [x] Plugin development guide documented.
-- [ ] README reviewed after CI passes.
-- [ ] Roadmap reviewed after CI passes.
+- [x] README reviewed after CI passes.
+- [x] Roadmap reviewed after CI passes.
 
 ---
 
@@ -88,7 +88,7 @@ First functional architecture prototype for EvoForge.
 - [x] Metadata artifact is saved.
 - [x] Evaluation records artifact is saved.
 - [x] Manifest artifact is saved.
-- [ ] Example output has been inspected manually.
+- [x] Example output has been inspected manually.
 
 ---
 
@@ -130,8 +130,6 @@ Not released yet.
 
 Required before internal MVP release:
 
-- README and roadmap must be reviewed.
-- Example output must be manually inspected.
 - Article outline must be drafted.
 
 ---
