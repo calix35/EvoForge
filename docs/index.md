@@ -6,7 +6,7 @@ project: EvoForge
 authors:
   - Alan Diaz Manriquez
 language: English
-last_updated: 2026-07-21
+last_updated: 2026-07-30
 ---
 
 # EvoForge
@@ -23,11 +23,21 @@ The project is being developed as scientific software to support reproducible op
 - [Project Principles](01_Project_Principles.md): Defines the engineering and research principles that guide the project.
 - [System Requirements](02_System_Requirements.md): Defines what EvoForge must provide as a framework.
 - [Domain Model](03_Domain_Model.md): Defines the core concepts and relationships of the EvoForge domain.
+- [Architecture Overview](04_Architecture_Overview.md): Defines the high-level software architecture.
+- [API Design](05_API_Design.md): Defines the initial public API and configuration workflow.
+- [Implementation Plan](06_Implementation_Plan.md): Defines the incremental implementation milestones.
+- [MVP Architecture Review](07_MVP_Architecture_Review.md): Reviews the first functional architecture prototype.
 
 ---
 
 ## Current Status
 
-EvoForge is currently in the foundation and architecture design phase.
+EvoForge has completed its first functional MVP architecture prototype.
 
-No implementation code has been added yet. The project follows a documentation-driven workflow where requirements, domain concepts, architecture, API design, and implementation tasks are specified before coding begins.
+The current MVP supports configuration validation, domain objects, plugin contracts, experiment orchestration, local output artifacts, CLI execution, and a built-in example adapter prototype.
+
+Run the current example with:
+
+```bash
+uv run evoforge run examples/sphere_random_search.yaml
+```
