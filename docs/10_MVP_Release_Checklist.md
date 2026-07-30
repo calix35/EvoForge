@@ -59,7 +59,7 @@ First functional architecture prototype for EvoForge.
 - [x] Lint checks pass locally.
 - [x] Documentation builds locally.
 - [x] CI workflow exists.
-- [ ] CI has passed on GitHub after the latest push.
+- [x] CI has passed on GitHub after the latest push.
 
 ---
 
@@ -104,7 +104,7 @@ First functional architecture prototype for EvoForge.
 - [ ] Target venues have been shortlisted.
 - [ ] Related work collection has started.
 - [ ] Software repository metadata has been finalized.
-- [ ] License decision has been finalized.
+- [x] License decision has been finalized.
 
 ---
 
@@ -130,10 +130,8 @@ Not released yet.
 
 Required before internal MVP release:
 
-- CI must pass on GitHub.
 - README and roadmap must be reviewed.
 - Example output must be manually inspected.
-- License decision must be finalized.
 - Article outline must be drafted.
 
 ---

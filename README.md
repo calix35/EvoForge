@@ -77,6 +77,12 @@ http://127.0.0.1:8000
 
 ---
 
+## License
+
+EvoForge is released under the [MIT License](LICENSE).
+
+---
+
 ## Research Roadmap
 
 EvoForge is being developed as the foundation for a multi-product research line:
