@@ -26,6 +26,7 @@ nav:
   - MVP Architecture Review: 07_MVP_Architecture_Review.md
   - Development Workflow: 08_Development_Workflow.md
   - Plugin Development Guide: 09_Plugin_Development_Guide.md
+  - MVP Release Checklist: 10_MVP_Release_Checklist.md
   - Architecture Decisions:
       - ADR Template: 04_Architecture_Decisions/ADR-0000-template.md
       - ADR-0001 Plugin-First Architecture: 04_Architecture_Decisions/ADR-0001-plugin-first.md
