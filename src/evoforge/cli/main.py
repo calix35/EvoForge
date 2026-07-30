@@ -8,6 +8,7 @@ import typer
 import yaml
 from pydantic import ValidationError
 
+from evoforge.adapters.examples import register_builtin_example_plugins
 from evoforge.core import Experiment
 from evoforge.plugins import MissingPluginError, PluginRegistry
 
@@ -25,7 +26,8 @@ def run(config_path: Path) -> None:
     """Run an EvoForge experiment from a YAML configuration file."""
 
     try:
-        experiment = Experiment.from_config(config_path, registry=_plugin_registry)
+        registry = _plugin_registry or register_builtin_example_plugins()
+        experiment = Experiment.from_config(config_path, registry=registry)
         result = experiment.run()
     except FileNotFoundError:
         typer.secho(

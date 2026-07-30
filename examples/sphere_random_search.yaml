@@ -1,0 +1,33 @@
+experiment:
+  name: sphere_random_search
+  description: Minimal random search run against the built-in sphere benchmark.
+  seed: 42
+
+problem:
+  name: sphere_benchmark
+  type: single_objective
+  variables:
+    - name: x1
+      type: continuous
+      bounds: [-5.0, 5.0]
+    - name: x2
+      type: continuous
+      bounds: [-5.0, 5.0]
+  objectives:
+    - name: sphere
+      direction: minimize
+  constraints: []
+
+optimizer:
+  plugin: example.random_search
+  parameters:
+    iterations: 5
+    seed: 42
+
+evaluator:
+  type: simulator
+  simulator:
+    plugin: example.sphere
+
+outputs:
+  directory: results/sphere_random_search
