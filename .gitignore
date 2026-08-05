@@ -24,6 +24,9 @@ env/
 # Generated experiment outputs
 results/
 
+# Private manuscript drafts and publisher templates
+papers_private/
+
 # Test cache
 .pytest_cache/
 .ruff_cache/

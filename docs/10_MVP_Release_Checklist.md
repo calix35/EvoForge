@@ -100,8 +100,8 @@ First functional architecture prototype for EvoForge.
 - [x] System context diagram exists.
 - [x] Domain model diagram exists.
 - [x] Architecture overview diagram exists.
-- [ ] Paper outline has been drafted.
-- [ ] Target venues have been shortlisted.
+- [x] Paper outline has been drafted.
+- [x] Target venues have been shortlisted.
 - [ ] Related work collection has started.
 - [ ] Software repository metadata has been finalized.
 - [x] License decision has been finalized.
@@ -125,12 +125,12 @@ First functional architecture prototype for EvoForge.
 Current decision:
 
 ```text
-Not released yet.
+Ready for internal MVP release.
 ```
 
 Required before internal MVP release:
 
-- Article outline must be drafted.
+- No blocking items remain for the internal MVP release decision.
 
 ---
 
