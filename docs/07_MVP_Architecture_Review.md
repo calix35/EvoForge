@@ -34,6 +34,10 @@ This review covers the initial EvoForge MVP implemented during the first develop
 
 This review does not evaluate scientific optimization performance, surrogate-assisted optimization strategies, AquaCrop integration, statistical analysis, visualization, or publication experiments.
 
+Post-MVP adapter work has added an optional `pymoo` GA optimizer adapter. This
+adapter is outside the original MVP scope and remains isolated from the core
+runtime.
+
 ---
 
 ## MVP Summary
@@ -71,6 +75,10 @@ Evaluation Records
         v
 Local Output Artifacts
 ```
+
+The optional `pymoo.ga` adapter validates the next architectural step: EvoForge
+can use an external optimizer through the plugin contract while keeping `pymoo`
+imports inside `src/evoforge/adapters/pymoo/`.
 
 ---
 
@@ -243,6 +251,10 @@ The MVP validates ADR-0001 by showing that EvoForge can execute an experiment th
 
 The example optimizer and simulator are implemented as adapters outside the core runtime.
 
+The optional `pymoo.ga` adapter preserves this boundary. It can be installed with
+the `pymoo` extra and registered explicitly without adding `pymoo` imports to
+`evoforge.core`, `evoforge.domain`, `evoforge.config`, or `evoforge.plugins`.
+
 ---
 
 ### Configuration Management
@@ -302,7 +314,6 @@ The MVP currently supports:
 
 The current MVP intentionally does not include:
 
-- Real evolutionary algorithms from `pymoo`.
 - Real surrogate models from scikit-learn, XGBoost, LightGBM, CatBoost, or PyTorch.
 - AquaCrop-OSPy integration.
 - Statistical comparison workflows.
@@ -315,6 +326,9 @@ The current MVP intentionally does not include:
 - Scientific benchmark campaigns.
 
 These features should be introduced through future documented milestones.
+
+Post-MVP note: the first optional external optimizer adapter, `pymoo.ga`, has
+now been added. Broader evolutionary optimizer coverage remains future work.
 
 ---
 
@@ -362,10 +376,10 @@ This phase should include:
 - Adding CI for tests and linting.
 - Reviewing and updating the implementation plan based on the completed MVP.
 
-After that, EvoForge can move toward the next research-oriented phase:
+After that, EvoForge can continue toward broader research-oriented phases:
 
 ```text
-External Optimizer Adapter: pymoo
+Additional External Adapters and Research Workflows
 ```
 
 ---

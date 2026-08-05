@@ -18,6 +18,11 @@ dependencies = [
   "typer",
 ]
 
+[project.optional-dependencies]
+pymoo = [
+  "pymoo",
+]
+
 [project.scripts]
 evoforge = "evoforge.cli:main"
 

@@ -1,0 +1,36 @@
+experiment:
+  name: sphere_pymoo_ga
+  description: Minimal pymoo GA run against the built-in sphere benchmark.
+  seed: 42
+
+problem:
+  name: sphere_benchmark
+  type: single_objective
+  variables:
+    - name: x1
+      type: continuous
+      bounds: [-5.0, 5.0]
+    - name: x2
+      type: continuous
+      bounds: [-5.0, 5.0]
+  objectives:
+    - name: sphere
+      direction: minimize
+  constraints: []
+
+optimizer:
+  plugin: pymoo.ga
+  parameters:
+    pop_size: 20
+    n_evaluations: 40
+    seed: 42
+    verbose: false
+
+evaluator:
+  type: simulator
+  simulator:
+    plugin: example.sphere
+
+outputs:
+  directory: results/sphere_pymoo_ga
+

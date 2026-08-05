@@ -26,7 +26,11 @@ def run(config_path: Path) -> None:
     """Run an EvoForge experiment from a YAML configuration file."""
 
     try:
-        registry = _plugin_registry or register_builtin_example_plugins()
+        registry = (
+            _plugin_registry
+            if _plugin_registry is not None
+            else _default_plugin_registry()
+        )
         experiment = Experiment.from_config(config_path, registry=registry)
         result = experiment.run()
     except FileNotFoundError:
@@ -69,3 +73,13 @@ def main() -> None:
     """Run the EvoForge CLI application."""
 
     app()
+
+
+def _default_plugin_registry() -> PluginRegistry:
+    registry = register_builtin_example_plugins()
+    try:
+        from evoforge.adapters.pymoo import register_pymoo_plugins
+    except ImportError:
+        return registry
+
+    return register_pymoo_plugins(registry)

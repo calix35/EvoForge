@@ -24,6 +24,7 @@ The current MVP supports:
 - Local output artifacts.
 - Typer-based CLI.
 - Built-in example plugins for a random search optimizer and sphere benchmark simulator.
+- Optional `pymoo` GA optimizer adapter.
 
 ---
 
@@ -58,6 +59,16 @@ The example writes output artifacts to:
 ```text
 results/sphere_random_search/
 ```
+
+Run the optional `pymoo` GA example:
+
+```bash
+uv sync --extra pymoo
+uv run --extra pymoo evoforge run examples/sphere_pymoo_ga.yaml
+```
+
+The `pymoo` adapter is optional. EvoForge core modules do not import `pymoo`
+directly.
 
 ---
 

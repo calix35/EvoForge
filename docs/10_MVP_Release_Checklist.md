@@ -25,6 +25,9 @@ This checklist applies to the current MVP architecture prototype only.
 
 It does not represent a public `1.0.0` release and does not include external optimizer adapters, surrogate models, AquaCrop integration, statistical analysis, or visualization workflows.
 
+Post-MVP work now includes a first optional external optimizer adapter for
+`pymoo`. This does not change the scope of the original internal MVP release.
+
 ---
 
 ## Release Candidate
@@ -54,6 +57,7 @@ First functional architecture prototype for EvoForge.
 - [x] Local data and output foundation exists.
 - [x] CLI foundation exists.
 - [x] Built-in example adapter prototype exists.
+- [x] Optional `pymoo` GA adapter exists.
 - [x] End-to-end YAML example exists.
 - [x] Tests pass locally.
 - [x] Lint checks pass locally.
@@ -84,6 +88,7 @@ First functional architecture prototype for EvoForge.
 
 - [x] Example YAML configuration exists.
 - [x] Example can be executed through the CLI.
+- [x] Optional `pymoo` example YAML configuration exists.
 - [x] Configuration artifact is saved.
 - [x] Metadata artifact is saved.
 - [x] Evaluation records artifact is saved.
@@ -113,7 +118,7 @@ First functional architecture prototype for EvoForge.
 
 - Plugin discovery is explicit only.
 - Example plugins are not production optimizer or simulator integrations.
-- No external scientific computing adapters are implemented yet.
+- External scientific computing adapter coverage is limited to optional `pymoo.ga`.
 - No surrogate-assisted optimization strategy is implemented yet.
 - No AquaCrop integration is implemented yet.
 - No statistical analysis or visualization workflows are implemented yet.

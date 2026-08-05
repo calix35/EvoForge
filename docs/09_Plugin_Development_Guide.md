@@ -144,6 +144,39 @@ These plugins are intended for testing, examples, documentation, and architectur
 
 ---
 
+## Optional pymoo Adapter
+
+EvoForge includes an optional `pymoo` optimizer adapter:
+
+- `pymoo.ga`
+
+It is defined under:
+
+```text
+src/evoforge/adapters/pymoo/
+```
+
+Install the optional dependency with:
+
+```bash
+uv sync --extra pymoo
+```
+
+Register the adapter explicitly:
+
+```python
+from evoforge.adapters.pymoo import register_pymoo_plugins
+
+registry = register_pymoo_plugins()
+```
+
+The adapter supports single-objective problems with continuous and integer
+variables. It uses EvoForge `Solution` and `EvaluationRecord` objects to interact
+with evaluators, so `pymoo` remains outside the core, domain, configuration, and
+plugin contract modules.
+
+---
+
 ## Current Limitations
 
 The MVP plugin system does not yet support:
