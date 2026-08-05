@@ -138,6 +138,48 @@ flowchart TB
 
 ---
 
+## Experiment Workflow Diagram
+
+The official experiment workflow diagram is maintained as a Mermaid source file:
+
+- [`EVF-DGM-0004 -- Experiment Workflow Diagram`](diagrams/experiment_workflow.mmd)
+
+```mermaid
+flowchart TB
+    researcher["Researcher"]
+    yaml["YAML Experiment Configuration"]
+    validation["Typed Configuration Validation"]
+    runtime["Experiment Runtime"]
+    registry["Plugin Registry"]
+    optimizer["Optimizer Plugin"]
+    simulator["Simulator Plugin"]
+    evaluations["Evaluation Records"]
+    metadata["Reproducibility Metadata"]
+    manifest["Artifact Manifest"]
+    output_dir["Experiment Output Directory"]
+
+    researcher -->|"defines"| yaml
+    yaml -->|"loaded by"| validation
+    validation -->|"creates"| runtime
+    runtime -->|"resolves plugins"| registry
+    registry -->|"provides"| optimizer
+    registry -->|"provides"| simulator
+    runtime -->|"runs"| optimizer
+    optimizer -->|"proposes candidate solutions"| simulator
+    simulator -->|"returns objective values"| evaluations
+    runtime -->|"stores"| evaluations
+    runtime -->|"stores"| metadata
+    runtime -->|"creates"| manifest
+    evaluations --> output_dir
+    metadata --> output_dir
+    manifest --> output_dir
+    output_dir -->|"supports reproduction and inspection"| researcher
+```
+
+This workflow represents the current MVP execution path. It demonstrates how a researcher-defined YAML configuration becomes a validated experiment, how the runtime resolves plugins through the registry, and how EvoForge stores evaluation and reproducibility artifacts.
+
+---
+
 ## Architectural Layers
 
 ### User Interface Layer

@@ -100,6 +100,7 @@ First functional architecture prototype for EvoForge.
 - [x] System context diagram exists.
 - [x] Domain model diagram exists.
 - [x] Architecture overview diagram exists.
+- [x] Experiment workflow diagram exists.
 - [x] Paper outline has been drafted.
 - [x] Target venues have been shortlisted.
 - [ ] Related work collection has started.
