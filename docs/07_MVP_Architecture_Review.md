@@ -6,7 +6,7 @@ project: EvoForge
 authors:
   - Alan Diaz Manriquez
 language: English
-last_updated: 2026-07-30
+last_updated: 2026-08-05
 ---
 
 # MVP Architecture Review
@@ -34,9 +34,9 @@ This review covers the initial EvoForge MVP implemented during the first develop
 
 This review does not evaluate scientific optimization performance, surrogate-assisted optimization strategies, AquaCrop integration, statistical analysis, visualization, or publication experiments.
 
-Post-MVP adapter work has added an optional `pymoo` GA optimizer adapter. This
-adapter is outside the original MVP scope and remains isolated from the core
-runtime.
+Post-MVP adapter work has added an optional `pymoo` GA optimizer adapter and an
+optional `scikit-learn` random forest surrogate adapter. These adapters are
+outside the original MVP scope and remain isolated from the core runtime.
 
 ---
 
@@ -79,6 +79,11 @@ Local Output Artifacts
 The optional `pymoo.ga` adapter validates the next architectural step: EvoForge
 can use an external optimizer through the plugin contract while keeping `pymoo`
 imports inside `src/evoforge/adapters/pymoo/`.
+
+The optional `sklearn.random_forest` adapter validates the surrogate extension
+point by fitting a `RandomForestRegressor` from EvoForge `Dataset` objects and
+returning predictions as `EvaluationRecord` objects, while keeping
+`scikit-learn` imports inside `src/evoforge/adapters/sklearn/`.
 
 ---
 
@@ -255,6 +260,11 @@ The optional `pymoo.ga` adapter preserves this boundary. It can be installed wit
 the `pymoo` extra and registered explicitly without adding `pymoo` imports to
 `evoforge.core`, `evoforge.domain`, `evoforge.config`, or `evoforge.plugins`.
 
+The optional `sklearn.random_forest` adapter follows the same boundary. It can
+be installed with the `sklearn` extra and registered explicitly without adding
+`scikit-learn` imports to `evoforge.core`, `evoforge.domain`,
+`evoforge.config`, or `evoforge.plugins`.
+
 ---
 
 ### Configuration Management
@@ -306,6 +316,7 @@ The MVP currently supports:
 - Evaluating a sphere benchmark simulator.
 - Writing configuration, metadata, evaluation records, and manifest files.
 - Running experiments through a CLI.
+- Training and using a minimal optional random forest surrogate adapter.
 - Testing all implemented layers.
 
 ---
@@ -314,7 +325,6 @@ The MVP currently supports:
 
 The current MVP intentionally does not include:
 
-- Real surrogate models from scikit-learn, XGBoost, LightGBM, CatBoost, or PyTorch.
 - AquaCrop-OSPy integration.
 - Statistical comparison workflows.
 - Visualization generation.
@@ -329,6 +339,9 @@ These features should be introduced through future documented milestones.
 
 Post-MVP note: the first optional external optimizer adapter, `pymoo.ga`, has
 now been added. Broader evolutionary optimizer coverage remains future work.
+The first optional surrogate adapter, `sklearn.random_forest`, has also been
+added. Broader surrogate model coverage and full surrogate-assisted optimization
+strategies remain future work.
 
 ---
 
@@ -344,7 +357,9 @@ Evaluation records are currently serialized to JSON. This is appropriate for the
 
 ### Runtime Scope
 
-The runtime currently supports only simulator-based evaluation in the initial implementation. Surrogate-assisted and hybrid evaluation strategies remain future work.
+The runtime currently supports simulator-based experiment execution in the
+initial implementation. A minimal surrogate adapter exists, but
+surrogate-assisted and hybrid optimization strategies remain future work.
 
 ### Example Adapter Scope
 
@@ -381,6 +396,14 @@ After that, EvoForge can continue toward broader research-oriented phases:
 ```text
 Additional External Adapters and Research Workflows
 ```
+
+The next research-oriented prototype should connect the current `pymoo.ga`
+optimizer adapter and `sklearn.random_forest` surrogate adapter through a
+minimal hybrid evaluator. This would allow EvoForge to demonstrate its intended
+surrogate-assisted role: external optimizers propose candidate solutions,
+simulators generate high-fidelity evaluation records, datasets train surrogate
+models, and hybrid policies decide when to use simulator or surrogate
+evaluations.
 
 ---
 

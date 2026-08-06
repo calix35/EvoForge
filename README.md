@@ -25,6 +25,7 @@ The current MVP supports:
 - Typer-based CLI.
 - Built-in example plugins for a random search optimizer and sphere benchmark simulator.
 - Optional `pymoo` GA optimizer adapter.
+- Optional `scikit-learn` random forest surrogate adapter.
 
 ---
 
@@ -69,6 +70,16 @@ uv run --extra pymoo evoforge run examples/sphere_pymoo_ga.yaml
 
 The `pymoo` adapter is optional. EvoForge core modules do not import `pymoo`
 directly.
+
+Install the optional `scikit-learn` surrogate adapter dependencies:
+
+```bash
+uv sync --extra sklearn
+```
+
+The `sklearn.random_forest` adapter is optional. It validates the surrogate
+extension point, but full surrogate-assisted optimization strategies remain
+future work.
 
 ---
 

@@ -196,6 +196,74 @@ This structure is illustrative, not final. It will be refined during implementat
 
 ---
 
+## Future Surrogate-Assisted Configuration Pattern
+
+The current executable examples focus on simulator-based evaluation. A future
+surrogate-assisted workflow should combine an optimizer, simulator, dataset, and
+surrogate model through a hybrid evaluator.
+
+Conceptually, this type of configuration would allow EvoForge to run an
+external optimizer such as `pymoo.ga`, evaluate an initial set of candidate
+solutions with a simulator, train a surrogate model from stored evaluation
+records, and then use a hybrid policy to decide when to call the simulator and
+when to query the surrogate model.
+
+Illustrative future configuration:
+
+```yaml
+experiment:
+  name: sphere_surrogate_assisted_ga
+  seed: 42
+
+problem:
+  name: sphere_benchmark
+  type: single_objective
+  variables:
+    - name: x1
+      type: continuous
+      bounds: [-5.0, 5.0]
+    - name: x2
+      type: continuous
+      bounds: [-5.0, 5.0]
+  objectives:
+    - name: sphere
+      direction: minimize
+
+optimizer:
+  plugin: pymoo.ga
+  parameters:
+    pop_size: 40
+    n_evaluations: 200
+    seed: 42
+
+evaluator:
+  type: hybrid
+  simulator:
+    plugin: example.sphere
+  parameters:
+    initial_simulator_evaluations: 40
+    surrogate_evaluations_per_generation: 30
+    simulator_evaluations_per_generation: 5
+    retrain_every: 1
+
+surrogate:
+  enabled: true
+  plugin: sklearn.random_forest
+  parameters:
+    n_estimators: 100
+    random_state: 42
+
+outputs:
+  directory: results/sphere_surrogate_assisted_ga
+```
+
+This configuration pattern is not yet part of the executable API. It documents
+the intended direction for connecting the current `pymoo.ga` optimizer adapter
+and the current `sklearn.random_forest` surrogate adapter through a future
+hybrid evaluation component.
+
+---
+
 ## Core Runtime API
 
 The central runtime API shall revolve around the `Experiment` object.

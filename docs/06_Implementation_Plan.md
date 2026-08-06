@@ -6,7 +6,7 @@ project: EvoForge
 authors:
   - Alan Diaz Manriquez
 language: English
-last_updated: 2026-07-21
+last_updated: 2026-08-05
 ---
 
 # Implementation Plan
@@ -297,6 +297,143 @@ Possible options:
 - The adapter validates the plugin-first architecture.
 - The adapter can be used in an end-to-end example.
 - The implementation does not compromise the core architecture.
+
+---
+
+## Milestone 8 -- First External Optimizer Adapter
+
+### Goal
+
+Validate external optimizer integration while keeping the framework core
+independent from optimizer-specific dependencies.
+
+### Implemented Adapter
+
+- `pymoo.ga`
+
+### Acceptance Criteria
+
+- The adapter is isolated under `src/evoforge/adapters/pymoo/`.
+- The optional dependency is installed through the `pymoo` extra.
+- The adapter supports an executable single-objective example.
+- Tests validate registration, configuration, execution, and reproducibility.
+
+---
+
+## Milestone 9 -- Minimal Surrogate Adapter
+
+### Goal
+
+Validate the surrogate model extension point with a real machine-learning
+library while avoiding premature implementation of full surrogate-assisted
+optimization strategies.
+
+### Implemented Adapter
+
+- `sklearn.random_forest`
+
+### Acceptance Criteria
+
+- The adapter is isolated under `src/evoforge/adapters/sklearn/`.
+- The optional dependency is installed through the `sklearn` extra.
+- The adapter trains from EvoForge `Dataset` objects.
+- The adapter predicts EvoForge `EvaluationRecord` objects.
+- Tests validate registration, configuration, fitting, prediction,
+  persistence, and dependency error messages.
+- Documentation clearly states that full surrogate-assisted optimization
+  remains future work.
+
+---
+
+## Milestone 10 -- Hybrid Surrogate-Assisted Evaluation Prototype
+
+### Goal
+
+Connect the external optimizer and surrogate adapter foundations through a
+minimal hybrid evaluation workflow.
+
+This milestone will validate the central long-term purpose of EvoForge:
+orchestrating optimizers, simulators, datasets, and surrogate models through a
+single reproducible experiment workflow.
+
+### Conceptual Workflow
+
+```text
+pymoo optimizer proposes candidate solutions
+        |
+        v
+EvoForge converts candidates into Solution objects
+        |
+        v
+The simulator evaluates an initial set of solutions
+        |
+        v
+EvoForge stores EvaluationRecord objects in a Dataset
+        |
+        v
+The surrogate adapter is trained from the Dataset
+        |
+        v
+A hybrid evaluator decides when to use the simulator or surrogate
+        |
+        v
+EvoForge records all simulator and surrogate evaluations with provenance
+```
+
+### Proposed Components
+
+- `HybridEvaluator`
+- `SurrogateAssistedEvaluator`
+- Evaluation policy configuration
+- Simulator evaluation budget
+- Surrogate evaluation budget
+- Surrogate retraining policy
+- Evaluation provenance metadata
+
+### Conceptual Configuration Pattern
+
+```yaml
+experiment:
+  name: sphere_surrogate_assisted_ga
+  seed: 42
+
+optimizer:
+  plugin: pymoo.ga
+  parameters:
+    pop_size: 40
+    n_evaluations: 200
+    seed: 42
+
+evaluator:
+  type: hybrid
+  simulator:
+    plugin: example.sphere
+  parameters:
+    initial_simulator_evaluations: 40
+    surrogate_evaluations_per_generation: 30
+    simulator_evaluations_per_generation: 5
+    retrain_every: 1
+
+surrogate:
+  enabled: true
+  plugin: sklearn.random_forest
+  parameters:
+    n_estimators: 100
+    random_state: 42
+```
+
+### Acceptance Criteria
+
+- The workflow can execute a minimal surrogate-assisted experiment.
+- Simulator and surrogate evaluations are both recorded as
+  `EvaluationRecord` objects.
+- Evaluation records preserve whether each value came from the simulator or the
+  surrogate model.
+- The surrogate can be retrained from accumulated simulator evaluations.
+- The implementation remains independent of concrete optimizer, simulator, and
+  surrogate libraries outside adapter packages.
+- The workflow is documented as an initial strategy prototype, not as a final
+  surrogate-assisted optimization methodology.
 
 ---
 

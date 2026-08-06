@@ -22,6 +22,10 @@ dependencies = [
 pymoo = [
   "pymoo",
 ]
+sklearn = [
+  "joblib",
+  "scikit-learn",
+]
 
 [project.scripts]
 evoforge = "evoforge.cli:main"

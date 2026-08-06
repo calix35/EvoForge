@@ -6,7 +6,7 @@ project: EvoForge
 authors:
   - Alan Diaz Manriquez
 language: English
-last_updated: 2026-07-30
+last_updated: 2026-08-05
 ---
 
 # MVP Release Checklist
@@ -21,12 +21,16 @@ The checklist is intended to support the transition from framework implementatio
 
 ## Scope
 
-This checklist applies to the current MVP architecture prototype only.
+This checklist applies to the current MVP architecture prototype and the first
+post-MVP external adapter validations.
 
-It does not represent a public `1.0.0` release and does not include external optimizer adapters, surrogate models, AquaCrop integration, statistical analysis, or visualization workflows.
+It does not represent a public `1.0.0` release and does not include AquaCrop
+integration, statistical analysis, visualization workflows, or full
+surrogate-assisted optimization strategies.
 
 Post-MVP work now includes a first optional external optimizer adapter for
-`pymoo`. This does not change the scope of the original internal MVP release.
+`pymoo` and a first optional surrogate adapter for `scikit-learn`. This does
+not change the scope of the original internal MVP release.
 
 ---
 
@@ -58,6 +62,7 @@ First functional architecture prototype for EvoForge.
 - [x] CLI foundation exists.
 - [x] Built-in example adapter prototype exists.
 - [x] Optional `pymoo` GA adapter exists.
+- [x] Optional `scikit-learn` random forest surrogate adapter exists.
 - [x] End-to-end YAML example exists.
 - [x] Tests pass locally.
 - [x] Lint checks pass locally.
@@ -118,7 +123,8 @@ First functional architecture prototype for EvoForge.
 
 - Plugin discovery is explicit only.
 - Example plugins are not production optimizer or simulator integrations.
-- External scientific computing adapter coverage is limited to optional `pymoo.ga`.
+- External scientific computing adapter coverage is limited to optional
+  `pymoo.ga` and `sklearn.random_forest`.
 - No surrogate-assisted optimization strategy is implemented yet.
 - No AquaCrop integration is implemented yet.
 - No statistical analysis or visualization workflows are implemented yet.

@@ -6,7 +6,7 @@ project: EvoForge
 authors:
   - Alan Diaz Manriquez
 language: English
-last_updated: 2026-07-30
+last_updated: 2026-08-05
 ---
 
 # Plugin Development Guide
@@ -177,6 +177,59 @@ plugin contract modules.
 
 ---
 
+## Optional scikit-learn Surrogate Adapter
+
+EvoForge includes an optional `scikit-learn` surrogate adapter:
+
+- `sklearn.random_forest`
+
+It is defined under:
+
+```text
+src/evoforge/adapters/sklearn/
+```
+
+Install the optional dependency with:
+
+```bash
+uv sync --extra sklearn
+```
+
+Register the adapter explicitly:
+
+```python
+from evoforge.adapters.sklearn import register_sklearn_plugins
+
+registry = register_sklearn_plugins()
+```
+
+The adapter trains a `RandomForestRegressor` from an EvoForge `Dataset` and
+returns surrogate predictions as `EvaluationRecord` objects. It currently
+supports numeric solution values and single-objective prediction. The adapter
+validates the surrogate extension point, but it does not yet implement a full
+surrogate-assisted optimization loop, model-management policy, active learning
+strategy, or evolution-control mechanism.
+
+Minimal conceptual usage:
+
+```python
+from evoforge.adapters.sklearn.plugins import RandomForestSurrogate
+from evoforge.config import SurrogateConfig
+
+surrogate = RandomForestSurrogate()
+surrogate.configure(
+    SurrogateConfig(
+        enabled=True,
+        plugin="sklearn.random_forest",
+        parameters={"n_estimators": 100, "random_state": 42},
+    )
+)
+surrogate.fit(dataset)
+prediction = surrogate.predict(solution)
+```
+
+---
+
 ## Current Limitations
 
 The MVP plugin system does not yet support:
@@ -186,6 +239,7 @@ The MVP plugin system does not yet support:
 - Versioned plugin metadata.
 - Plugin capability declarations.
 - Plugin-specific schema discovery.
+- Full surrogate-assisted optimization workflows.
 
 These features should be introduced through future ADRs and implementation milestones.
 
