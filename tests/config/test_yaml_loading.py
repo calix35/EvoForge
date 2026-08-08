@@ -10,24 +10,24 @@ from evoforge.config import ExperimentConfig, load_experiment_config
 def valid_config_data() -> dict:
     return {
         "experiment": {
-            "name": "aquacrop_nsga2_baseline",
+            "name": "external_simulator_baseline",
             "description": "Baseline simulation-based optimization experiment.",
             "seed": 42,
         },
         "problem": {
-            "name": "irrigation_management",
+            "name": "resource_management",
             "type": "multi_objective",
             "variables": [
                 {
-                    "name": "irrigation_day_1",
+                    "name": "resource_level",
                     "type": "continuous",
                     "bounds": [0.0, 40.0],
-                    "unit": "mm",
+                    "unit": "units",
                 }
             ],
             "objectives": [
-                {"name": "yield", "direction": "maximize"},
-                {"name": "water_use", "direction": "minimize"},
+                {"name": "performance", "direction": "maximize"},
+                {"name": "resource_use", "direction": "minimize"},
             ],
         },
         "optimizer": {
@@ -37,11 +37,11 @@ def valid_config_data() -> dict:
         "evaluator": {
             "type": "simulator",
             "simulator": {
-                "plugin": "aquacrop_ospy",
-                "parameters": {"weather_file": "data/weather.csv"},
+                "plugin": "external.simulator",
+                "parameters": {"input_file": "data/input.csv"},
             },
         },
-        "outputs": {"directory": "results/aquacrop_nsga2_baseline"},
+        "outputs": {"directory": "results/external_simulator_baseline"},
     }
 
 
@@ -56,7 +56,7 @@ def test_valid_yaml_loading(tmp_path: Path) -> None:
     config = load_experiment_config(config_path)
 
     assert isinstance(config, ExperimentConfig)
-    assert config.experiment.name == "aquacrop_nsga2_baseline"
+    assert config.experiment.name == "external_simulator_baseline"
     assert config.problem.variables[0].type == "continuous"
     assert config.optimizer.parameters["generations"] == 200
 

@@ -16,19 +16,9 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Project Vision: 00_Project_Vision.md
-  - Project Principles: 01_Project_Principles.md
-  - System Requirements: 02_System_Requirements.md
-  - Domain Model: 03_Domain_Model.md
-  - Architecture Overview: 04_Architecture_Overview.md
-  - API Design: 05_API_Design.md
-  - Implementation Plan: 06_Implementation_Plan.md
-  - MVP Architecture Review: 07_MVP_Architecture_Review.md
-  - Development Workflow: 08_Development_Workflow.md
-  - Plugin Development Guide: 09_Plugin_Development_Guide.md
-  - MVP Release Checklist: 10_MVP_Release_Checklist.md
-  - Architecture Decisions:
-      - ADR Template: 04_Architecture_Decisions/ADR-0000-template.md
-      - ADR-0001 Plugin-First Architecture: 04_Architecture_Decisions/ADR-0001-plugin-first.md
-      - ADR-0002 Configuration Management: 04_Architecture_Decisions/ADR-0002-configuration-management.md
-      - ADR-0003 Dependency Management: 04_Architecture_Decisions/ADR-0003-dependency-management.md
+  - Getting Started: getting_started.md
+  - Configuration: configuration.md
+  - Examples: examples.md
+  - Plugins: plugins.md
+  - Architecture: architecture.md
+  - Development: development.md
