@@ -20,6 +20,7 @@ nav:
   - Home: index.md
   - Getting Started: getting_started.md
   - Configuration: configuration.md
+  - JSON Artifacts: artifacts.md
   - Examples: examples.md
   - Plugins: plugins.md
   - Plugin Compatibility: plugin_compatibility.md

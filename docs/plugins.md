@@ -1,7 +1,8 @@
 # Plugins
 
-EvoForge integrates optimizers, simulators, surrogate models, analysis tools,
-visualization tools, and report generators through explicit plugin contracts.
+EvoForge integrates optimizers, simulators and surrogate models through explicit
+plugin contracts. Analysis, visualization and report contracts are defined but
+have no operational runtime plugins in v0.2.0.
 
 Plugins expose a stable `plugin_id`, receive validated configuration through
 `configure(...)`, and exchange EvoForge domain objects such as `Problem`,
@@ -14,6 +15,31 @@ for contextual exceptions and the distinct direct/assisted failure policies.
 ---
 
 ## Plugin Registry
+
+### User-Owned Simulator Walkthrough
+
+The runnable [custom simulator example](https://github.com/calix35/EvoForge/blob/main/examples/custom_simulator.py)
+defines `ShiftedSphere` in user code. It provides a `plugin_id`,
+`configure(SimulatorConfig)` and `evaluate(Solution) -> EvaluationRecord`.
+The class is about twenty source lines; the complete file includes imports and
+a runnable setup. Its objective is a shifted quadratic named `loss`.
+
+1. Implement the class in your own module; do not edit the EvoForge core.
+2. Select `user.shifted_sphere` in `config.evaluator.simulator` and declare `loss`.
+3. Register the instance with `registry.register(ShiftedSphere())`.
+4. Pass that registry to `Experiment(config, registry)` and run it.
+
+```bash
+uv run --locked --no-sync python examples/custom_simulator.py
+```
+
+The example uses built-in random search and needs no scientific extras. It writes
+five real observations under `results/custom_simulator`. Custom registration is
+programmatic; the CLI does not automatically import arbitrary user modules.
+The example uses the v0.2.0 public interfaces, and is an additional documentation
+example rather than a change to the archived v0.2.0 core. A production adapter
+must additionally validate its supported problem scope, units, inputs and any
+external process behavior. See the [0.x compatibility policy](plugin_compatibility.md).
 
 Plugins are registered explicitly:
 

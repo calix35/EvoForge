@@ -11,6 +11,27 @@ The main sections are:
 - `surrogate`: optional surrogate model configuration.
 - `outputs`: output directory and artifact settings.
 
+## Schema Validation Versus Runtime Support
+
+The v0.2.0 configuration model recognizes `simulator`, `function`, `surrogate`,
+and `hybrid` evaluator labels, but the current experiment runtime builds only
+the `simulator` evaluator. The other labels are schema-level placeholders:
+passing schema validation does not make them executable. The runtime rejects
+them during evaluator construction, before optimization/evaluation begins,
+with a contextual `ConfigurationError` chained to `NotImplementedError`.
+Optimizer configuration can already have occurred at that point.
+
+For the implemented assisted workflow, keep `evaluator.type: simulator` and
+enable `surrogate.workflow`; do not select the standalone `surrogate` or
+`hybrid` evaluator labels. Assisted configurations additionally reject
+non-simulator evaluator types during model validation. Plugin-specific
+parameters are validated by the selected adapter, not the generic schema.
+Analysis, visualization and report configuration sections are contracts only;
+enabling them does not invoke an operational runtime plugin. The runtime does
+not currently honor every reserved output/dataset setting: JSON artifact
+generation follows the implemented `OutputManager` behavior, rather than
+providing generic CSV/Parquet persistence or figure output.
+
 For `evaluator.simulator.plugin: aquacrop.irrigation`, scenario parameters are
 validated inside the optional adapter. See [AquaCrop inputs and units](aquacrop.md#inputs-and-units).
 
