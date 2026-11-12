@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -10,29 +11,60 @@ on:
 
 jobs:
   validate:
-    name: Tests, lint, and docs
+    name: Validation (${{ matrix.environment }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - environment: base
+            extras: ""
+          - environment: full
+            extras: "--extra pymoo --extra sklearn --extra aquacrop"
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.11.30"
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --locked --python 3.12 ${{ matrix.extras }}
+
+      - name: Check optional imports explicitly
+        if: matrix.environment == 'full'
+        run: |
+          uv run --locked --no-sync python -c "from pymoo.algorithms.moo.nsga2 import NSGA2; from sklearn.ensemble import RandomForestRegressor; from aquacrop import AquaCropModel"
 
       - name: Run tests
-        run: uv run pytest
+        run: >-
+          uv run --locked --no-sync pytest --cov=src/evoforge --cov-branch
+          --cov-report=term-missing --cov-report=xml:coverage.xml
+          --cov-report=json:coverage.json --cov-report=html
 
       - name: Run lint
-        run: uv run ruff check .
+        run: uv run --locked --no-sync ruff check .
 
       - name: Build documentation
-        run: uv run mkdocs build --strict
+        run: uv run --locked --no-sync mkdocs build --strict
+
+      - name: Check lockfile was not modified
+        run: git diff --exit-code -- uv.lock
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.environment }}
+          path: |
+            coverage.xml
+            coverage.json
+            htmlcov/

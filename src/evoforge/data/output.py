@@ -9,6 +9,7 @@ from typing import Any
 
 from evoforge.config import ExperimentConfig
 from evoforge.domain import EvaluationRecord
+from evoforge.errors import OutputError, error_context
 
 
 @dataclass(frozen=True)
@@ -20,11 +21,13 @@ class OutputArtifacts:
     metadata_path: Path
     evaluation_records_path: Path | None
     manifest_path: Path
+    predictions_path: Path | None = None
+    non_dominated_path: Path | None = None
 
     def as_dict(self) -> dict[str, str | None]:
         """Return artifact paths as strings for public result objects."""
 
-        return {
+        paths = {
             "output_directory": str(self.output_directory),
             "config": str(self.config_path),
             "metadata": str(self.metadata_path),
@@ -35,6 +38,11 @@ class OutputArtifacts:
             ),
             "manifest": str(self.manifest_path),
         }
+        if self.predictions_path is not None:
+            paths["predictions"] = str(self.predictions_path)
+        if self.non_dominated_path is not None:
+            paths["non_dominated"] = str(self.non_dominated_path)
+        return paths
 
 
 class OutputManager:
@@ -51,7 +59,8 @@ class OutputManager:
     def create_output_directory(self) -> Path:
         """Create the configured output directory if needed."""
 
-        self.output_directory.mkdir(parents=True, exist_ok=True)
+        with error_context(OutputError, "create_output_directory"):
+            self.output_directory.mkdir(parents=True, exist_ok=True)
         return self.output_directory
 
     def save_config(self, config: ExperimentConfig) -> Path:
@@ -104,16 +113,35 @@ class OutputManager:
                     "kind": "evaluation_records",
                 }
             )
+        if artifacts.predictions_path is not None:
+            manifest["artifacts"].append(
+                {
+                    "name": "predictions",
+                    "path": artifacts.predictions_path.name,
+                    "kind": "unvalidated_predictions",
+                }
+            )
+        if artifacts.non_dominated_path is not None:
+            manifest["artifacts"].append(
+                {
+                    "name": "non_dominated",
+                    "path": artifacts.non_dominated_path.name,
+                    "kind": "observed_non_dominated_records",
+                }
+            )
 
         path = self.output_directory / self.MANIFEST_FILENAME
         self._write_json(path, manifest)
         return path
 
+    @error_context(OutputError, "write_results")
     def save_run_outputs(
         self,
         config: ExperimentConfig,
         metadata: dict[str, Any],
         records: tuple[EvaluationRecord, ...] = (),
+        predictions: tuple[EvaluationRecord, ...] | None = None,
+        non_dominated_records: tuple[EvaluationRecord, ...] | None = None,
     ) -> OutputArtifacts:
         """Create the output directory and save standard run artifacts."""
 
@@ -122,22 +150,42 @@ class OutputManager:
         metadata_path = self.save_metadata(metadata)
         records_path = self.save_evaluation_records(records) if records else None
         manifest_path = output_directory / self.MANIFEST_FILENAME
+        predictions_path = None
+        non_dominated_path = None
+        if non_dominated_records is not None:
+            non_dominated_path = output_directory / "non_dominated.json"
+            self._write_json(
+                non_dominated_path,
+                [
+                    _serialize_evaluation_record(record)
+                    for record in non_dominated_records
+                ],
+            )
+        if predictions is not None:
+            predictions_path = output_directory / "predictions.json"
+            self._write_json(
+                predictions_path,
+                [_serialize_evaluation_record(record) for record in predictions],
+            )
         artifacts = OutputArtifacts(
             output_directory=output_directory,
             config_path=config_path,
             metadata_path=metadata_path,
             evaluation_records_path=records_path,
             manifest_path=manifest_path,
+            predictions_path=predictions_path,
+            non_dominated_path=non_dominated_path,
         )
         self.write_manifest(artifacts)
         return artifacts
 
     @staticmethod
     def _write_json(path: Path, data: Any) -> None:
-        path.write_text(
-            json.dumps(data, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
+        with error_context(OutputError, f"write_results:{path.name}"):
+            path.write_text(
+                json.dumps(data, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
 
 
 def _serialize_evaluation_record(record: EvaluationRecord) -> dict[str, Any]:

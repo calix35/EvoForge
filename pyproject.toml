@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "evoforge"
-version = "0.1.0"
+version = "0.2.0"
 description = "Extensible framework for simulation-based optimization with evolutionary computation and surrogate models."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -19,6 +19,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+aquacrop = [
+  "aquacrop==3.1.0",
+]
 pymoo = [
   "pymoo",
 ]
@@ -34,6 +37,7 @@ evoforge = "evoforge.cli:main"
 dev = [
   "mkdocs-material",
   "pytest",
+  "pytest-cov",
   "ruff",
 ]
 
@@ -48,3 +52,15 @@ src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+
+[tool.coverage.run]
+branch = true
+source = ["src/evoforge"]
+relative_files = true
+
+[tool.coverage.report]
+show_missing = true
+precision = 2
+
+[tool.coverage.html]
+directory = "htmlcov"

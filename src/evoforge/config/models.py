@@ -1,5 +1,6 @@
 """Typed configuration models for EvoForge experiment definitions."""
 
+from math import isfinite
 from typing import Any, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -110,12 +111,32 @@ class EvaluatorConfig(EvoForgeConfigModel):
         return self
 
 
+class SurrogateWorkflowConfig(EvoForgeConfigModel):
+    """Budgets for sequential surrogate-assisted optimization."""
+
+    initial_size: int = Field(ge=2, strict=True)
+    real_budget: int = Field(ge=2, strict=True)
+    search_budget: int = Field(ge=1, strict=True)
+    candidates_per_update: int = Field(ge=1, strict=True)
+
+    @model_validator(mode="after")
+    def validate_sizes(self) -> Self:
+        if self.initial_size > self.real_budget:
+            raise ValueError("initial_size must not exceed real_budget.")
+        if self.candidates_per_update > self.search_budget:
+            raise ValueError("candidates_per_update must not exceed search_budget.")
+        if self.candidates_per_update > self.real_budget - self.initial_size:
+            raise ValueError("candidates_per_update exceeds remaining real budget.")
+        return self
+
+
 class SurrogateConfig(EvoForgeConfigModel):
     """Optional surrogate model configuration."""
 
     enabled: bool = False
     plugin: str | None = None
     parameters: dict[str, Any] = Field(default_factory=dict)
+    workflow: SurrogateWorkflowConfig | None = None
 
     @model_validator(mode="after")
     def validate_enabled_surrogate(self) -> Self:
@@ -179,3 +200,32 @@ class ExperimentConfig(EvoForgeConfigModel):
     analysis: AnalysisConfig = Field(default_factory=AnalysisConfig)
     visualization: VisualizationConfig = Field(default_factory=VisualizationConfig)
     report: ReportConfig = Field(default_factory=ReportConfig)
+
+    @model_validator(mode="after")
+    def validate_surrogate_workflow(self) -> Self:
+        if not self.surrogate.enabled:
+            return self
+        if self.surrogate.workflow is None:
+            raise ValueError("Enabled surrogate requires workflow budgets.")
+        if self.evaluator.type != "simulator":
+            raise ValueError("Surrogate workflow requires a simulator evaluator.")
+        if (
+            self.problem.type != "single_objective"
+            or len(self.problem.objectives) != 1
+            or self.problem.constraints
+        ):
+            raise ValueError(
+                "Surrogate workflow requires one objective, no constraints."
+            )
+        for variable in self.problem.variables:
+            if (
+                variable.type != "continuous"
+                or variable.bounds is None
+                or not all(isfinite(v) for v in variable.bounds)
+                or variable.bounds[0] >= variable.bounds[1]
+            ):
+                raise ValueError(
+                    "Surrogate workflow requires finite, nondegenerate "
+                    "continuous bounds."
+                )
+        return self

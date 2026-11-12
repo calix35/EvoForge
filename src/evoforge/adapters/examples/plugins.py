@@ -23,6 +23,7 @@ class ExampleRandomSearchOptimizer:
     def __init__(self) -> None:
         self.iterations = 10
         self.seed: int | None = None
+        self.last_run_metadata: dict[str, Any] = {}
 
     def configure(self, config: object) -> None:
         optimizer_config = _require_config(config, OptimizerConfig)
@@ -35,6 +36,7 @@ class ExampleRandomSearchOptimizer:
             raise ValueError(msg)
 
         rng = random.Random(self.seed)
+        self.last_run_metadata = {"optimizer_seed": self.seed}
         records: list[EvaluationRecord] = []
         for _ in range(self.iterations):
             solution = Solution(

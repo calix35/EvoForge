@@ -24,6 +24,7 @@ class PymooGAOptimizer:
         self.n_evaluations = 100
         self.seed: int | None = None
         self.verbose = False
+        self.last_run_metadata: dict[str, Any] = {}
 
     def configure(self, config: object) -> None:
         optimizer_config = _require_optimizer_config(config)
@@ -51,6 +52,7 @@ class PymooGAOptimizer:
             raise RuntimeError(msg) from error
 
         pymoo_problem = _EvoForgeElementwiseProblem(problem, evaluator)
+        self.last_run_metadata = {"optimizer_seed": self.seed}
         algorithm = GA(pop_size=self.pop_size)
         termination = get_termination("n_eval", self.n_evaluations)
         minimize(

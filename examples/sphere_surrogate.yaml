@@ -1,0 +1,36 @@
+experiment:
+  name: sphere_surrogate
+  seed: 42
+problem:
+  name: sphere
+  type: single_objective
+  variables:
+    - name: x1
+      type: continuous
+      bounds: [-5.0, 5.0]
+    - name: x2
+      type: continuous
+      bounds: [-5.0, 5.0]
+  objectives:
+    - name: sphere
+      direction: minimize
+optimizer:
+  plugin: pymoo.ga
+  parameters:
+    pop_size: 12
+evaluator:
+  type: simulator
+  simulator:
+    plugin: example.sphere
+surrogate:
+  enabled: true
+  plugin: sklearn.random_forest
+  parameters:
+    n_estimators: 24
+  workflow:
+    initial_size: 6
+    real_budget: 13
+    search_budget: 25
+    candidates_per_update: 3
+outputs:
+  directory: results/sphere_surrogate

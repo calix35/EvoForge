@@ -19,7 +19,10 @@ EvoForge currently supports:
 - Typer-based CLI.
 - Built-in example plugins for a random search optimizer and sphere benchmark simulator.
 - Optional `pymoo` GA optimizer adapter.
+- Optional `pymoo.nsga2` multiobjective adapter with strict evaluator budgets.
 - Optional `scikit-learn` random forest surrogate adapter.
+- Optional sequential surrogate-assisted optimization with strict simulator budgets.
+- Optional AquaCrop-OSPy 3.1.0 irrigation simulator adapter.
 
 ---
 
@@ -65,6 +68,10 @@ uv run --extra pymoo evoforge run examples/sphere_pymoo_ga.yaml
 The `pymoo` adapter is optional. EvoForge core modules do not import `pymoo`
 directly.
 
+For a two-objective smoke example, run `examples/zdt1_nsga2.yaml` with the same
+optional extra. The [multiobjective guide](docs/multiobjective.md) documents
+NSGA-II, original objective values, and observed non-dominated output.
+
 Install the optional `scikit-learn` surrogate adapter dependencies:
 
 ```bash
@@ -75,9 +82,35 @@ The `sklearn.random_forest` adapter is optional. It validates the surrogate
 extension point and can be used programmatically to fit and predict from
 EvoForge datasets.
 
+Run the complete surrogate-assisted sphere example:
+
+```bash
+uv sync --extra pymoo --extra sklearn
+uv run --extra pymoo --extra sklearn evoforge run examples/sphere_surrogate.yaml
+```
+
+This workflow trains the random forest on real simulator observations, searches
+its predictions with pymoo GA, and validates selected candidates with the
+simulator. Only real successful evaluations can become the final best result.
+See [configuration](docs/configuration.md#surrogate-assisted-workflow) for budgets,
+failure handling, and supported problems.
+
+For a real crop-water simulation, see the [AquaCrop adapter guide](docs/aquacrop.md).
+It includes direct GA and surrogate-assisted irrigation examples, Python 3.12
+installation, units, climate-data provenance, and third-party license notices.
+
 ---
 
 ## Documentation
+
+The documentation site is hosted at [calix35.github.io/EvoForge](https://calix35.github.io/EvoForge/).
+Version-specific compatibility changes are recorded in [CHANGELOG.md](CHANGELOG.md).
+Citation metadata are provided in [CITATION.cff](CITATION.cff).
+
+Every persisted experiment records best-effort runtime provenance, plugin
+classes/distribution versions, configured/effective seeds, and available
+Git/lockfile information. See [reproducibility and validation](docs/reproducibility.md)
+for `uv sync --locked`, optional extras, coverage reports, and reconstruction limits.
 
 Serve the local documentation site:
 

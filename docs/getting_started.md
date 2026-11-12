@@ -7,7 +7,7 @@ EvoForge uses `uv` for dependency and environment management.
 Install the base environment:
 
 ```bash
-uv sync
+uv sync --locked --python 3.12
 ```
 
 Run commands inside the managed environment with:
@@ -46,20 +46,24 @@ be committed.
 Install the optional `pymoo` adapter dependencies:
 
 ```bash
-uv sync --extra pymoo
+uv sync --locked --python 3.12 --extra pymoo
 ```
 
 Install the optional `scikit-learn` adapter dependencies:
 
 ```bash
-uv sync --extra sklearn
+uv sync --locked --python 3.12 --extra sklearn
 ```
 
 Install both optional adapter groups:
 
 ```bash
-uv sync --extra pymoo --extra sklearn
+uv sync --locked --python 3.12 --extra pymoo --extra sklearn
 ```
+
+For irrigation simulations, also add `--extra aquacrop`. See
+[reproducibility](reproducibility.md) for locked reconstruction, recorded runtime
+provenance, and the limits of numerical reproducibility across environments.
 
 ---
 

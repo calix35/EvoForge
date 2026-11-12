@@ -1,0 +1,56 @@
+experiment:
+  name: zdt1_nsga2
+  seed: 42
+problem:
+  name: zdt1
+  type: multi_objective
+  variables:
+    - {name: x01, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x02, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x03, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x04, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x05, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x06, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x07, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x08, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x09, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x10, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x11, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x12, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x13, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x14, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x15, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x16, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x17, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x18, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x19, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x20, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x21, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x22, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x23, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x24, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x25, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x26, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x27, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x28, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x29, type: continuous, bounds: [0.0, 1.0]}
+    - {name: x30, type: continuous, bounds: [0.0, 1.0]}
+  objectives:
+    - {name: f1, direction: minimize}
+    - {name: f2, direction: minimize}
+  constraints: []
+optimizer:
+  plugin: pymoo.nsga2
+  parameters:
+    pop_size: 20
+    n_evaluations: 45
+    seed: 42
+    verbose: false
+evaluator:
+  type: simulator
+  simulator:
+    plugin: example.zdt1
+    parameters:
+      n_var: 30
+outputs:
+  directory: results/zdt1_nsga2

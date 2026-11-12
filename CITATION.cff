@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "Please cite the specific software version used in your experiments."
+type: software
+title: "EvoForge"
+version: 0.2.0
+license: MIT
+repository-code: "https://github.com/calix35/EvoForge"
+url: "https://calix35.github.io/EvoForge/"
+abstract: >-
+  A modular Python framework for orchestrating simulation-based evolutionary
+  optimization experiments, with direct and surrogate-assisted execution,
+  optional scientific-library adapters, and structured experiment artifacts.
+authors:
+  - family-names: Saldivar-Alonso
+    given-names: Vicente Paul
+    affiliation: "Facultad de Ingenieria y Ciencias, Universidad Autonoma de Tamaulipas"
+  - family-names: Diaz-Manriquez
+    given-names: Alan
+    affiliation: "Facultad de Ingenieria y Ciencias, Universidad Autonoma de Tamaulipas"
+    email: amanriquez@docentes.uat.edu.mx
+  - family-names: Elizondo-Leal
+    given-names: Juan Carlos
+    affiliation: "Facultad de Ingenieria y Ciencias, Universidad Autonoma de Tamaulipas"
+  - family-names: Filoteo-Razo
+    given-names: Jose David
+    affiliation: "Facultad de Ingenieria y Ciencias, Universidad Autonoma de Tamaulipas"
+  - family-names: Martinez-Angulo
+    given-names: Jose Ramon
+    affiliation: "Facultad de Ingenieria y Ciencias, Universidad Autonoma de Tamaulipas"

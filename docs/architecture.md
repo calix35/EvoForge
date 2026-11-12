@@ -90,3 +90,26 @@ YAML configuration
 
 This keeps experiment definition, execution, evaluation provenance, and output
 storage separated.
+
+## Sequential Surrogate Runtime
+
+When enabled, `core.surrogate.SurrogateWorkflow` coordinates an initial real
+design, successful-real-only datasets, surrogate fitting, bounded prediction
+searches, and real candidate validation. It depends only on configuration,
+domain objects, and plugin protocols. pymoo and scikit-learn imports remain in
+their optional adapter packages. Plugin contracts are unchanged.
+
+The runtime owns the real budget and deduplication independently of optimizer
+population sizes. A prediction evaluator caps each search and captures records
+even if an optimizer does not return its intermediate evaluations. The output
+layer persists real records and predictions in separate artifacts. Direct
+execution continues to call the optimizer with the simulator evaluator.
+
+## Multiobjective Optimizer Results
+
+The optional NSGA-II adapter returns a domain `OptimizationResult` containing
+real observations, observed non-dominated records, and metadata. The runtime
+passes those records to the output layer and exposes them in `ExperimentResult`.
+Budget interruption, objective direction conversion, and pymoo non-dominated
+sorting stay inside the adapter. Optimizer plugin contracts are unchanged, and
+existing optimizers may continue returning lists or datasets.

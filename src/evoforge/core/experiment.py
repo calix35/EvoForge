@@ -23,10 +23,22 @@ from evoforge.domain import (
     EvaluationRecord,
     Objective,
     ObjectiveDirection,
+    OptimizationResult,
     Problem,
+    Solution,
     VariableType,
 )
-from evoforge.plugins import OptimizerPlugin, PluginRegistry, SimulatorPlugin
+from evoforge.errors import ConfigurationError, PluginExecutionError, error_context
+from evoforge.plugins import (
+    OptimizerPlugin,
+    PluginRegistry,
+    SimulatorPlugin,
+    SurrogatePlugin,
+)
+
+from .evaluation import SimulatorEvaluator, validate_record
+from .provenance import collect_provenance
+from .surrogate import SurrogateWorkflow
 
 
 class ExperimentStatus(StrEnum):
@@ -49,6 +61,9 @@ class ExperimentResult:
     artifact_paths: dict[str, str | None] = field(default_factory=dict)
     records: tuple[EvaluationRecord, ...] = field(default_factory=tuple)
     raw_result: Any | None = None
+    predictions: tuple[EvaluationRecord, ...] = ()
+    best_record: EvaluationRecord | None = None
+    non_dominated_records: tuple[EvaluationRecord, ...] = ()
 
 
 class Experiment:
@@ -60,7 +75,7 @@ class Experiment:
         registry: PluginRegistry | None = None,
     ) -> None:
         self.config = config
-        self.registry = registry or PluginRegistry()
+        self.registry = registry if registry is not None else PluginRegistry()
         self.status = ExperimentStatus.CREATED
 
     @classmethod
@@ -71,7 +86,9 @@ class Experiment:
     ) -> Experiment:
         """Create an experiment from a YAML configuration file."""
 
-        return cls(config=load_experiment_config(path), registry=registry)
+        with error_context(ConfigurationError, "load_config"):
+            config = load_experiment_config(path)
+        return cls(config=config, registry=registry)
 
     def run(self) -> ExperimentResult:
         """Run the minimal plugin-backed orchestration workflow."""
@@ -79,27 +96,63 @@ class Experiment:
         self.status = ExperimentStatus.RUNNING
 
         try:
-            problem = _build_problem(self.config.problem)
-            optimizer = self.registry.get(
-                self.config.optimizer.plugin,
-                OptimizerPlugin,
-            )
-            optimizer.configure(self.config.optimizer)
+            with error_context(ConfigurationError, "build_problem"):
+                problem = _build_problem(self.config.problem)
+            optimizer = self._lookup(self.config.optimizer.plugin, OptimizerPlugin)
+            with error_context(
+                ConfigurationError, "configure", self.config.optimizer.plugin
+            ):
+                optimizer.configure(self.config.optimizer)
 
             evaluator = self._build_evaluator()
-            raw_result = optimizer.optimize(problem, evaluator)
-            records = _extract_records(raw_result)
             metadata = self._reproducibility_metadata()
+            predictions = None
+            non_dominated_records = None
+            best_record = None
+            failed = False
+            used_plugins = {"optimizer": optimizer, "simulator": evaluator}
+            if self.config.surrogate.enabled:
+                surrogate = self._lookup(self.config.surrogate.plugin, SurrogatePlugin)
+                used_plugins["surrogate"] = surrogate
+                workflow = SurrogateWorkflow(
+                    self.config, problem, optimizer, evaluator, surrogate
+                ).execute()
+                raw_result = workflow
+                records = tuple(workflow.records)
+                predictions = tuple(workflow.predictions)
+                best_record = workflow.best_record
+                failed = workflow.failed
+                metadata.update(workflow.metadata)
+            else:
+                with error_context(
+                    PluginExecutionError, "optimize", self.config.optimizer.plugin
+                ):
+                    raw_result = optimizer.optimize(
+                        problem, SimulatorEvaluator(evaluator)
+                    )
+                    records = _extract_records(raw_result)
+                    for record in records:
+                        validate_record(
+                            record, Solution(record.solution.values, problem)
+                        )
+                if isinstance(raw_result, OptimizationResult):
+                    metadata.update(raw_result.metadata)
+                    non_dominated_records = raw_result.non_dominated_records
+            metadata["provenance"] = collect_provenance(
+                self.config, used_plugins, metadata, records
+            )
             artifacts = OutputManager(self.config.outputs.directory).save_run_outputs(
                 config=self.config,
                 metadata=metadata,
                 records=records,
+                predictions=predictions,
+                non_dominated_records=non_dominated_records,
             )
         except Exception:
             self.status = ExperimentStatus.FAILED
             raise
 
-        self.status = ExperimentStatus.COMPLETED
+        self.status = ExperimentStatus.FAILED if failed else ExperimentStatus.COMPLETED
         return ExperimentResult(
             experiment_id=self.config.experiment.name,
             status=self.status,
@@ -108,6 +161,9 @@ class Experiment:
             artifact_paths=artifacts.as_dict(),
             records=records,
             raw_result=raw_result,
+            predictions=predictions or (),
+            best_record=best_record,
+            non_dominated_records=non_dominated_records or (),
         )
 
     def _reproducibility_metadata(self) -> dict[str, Any]:
@@ -130,16 +186,23 @@ class Experiment:
                 "The minimal Experiment runtime only supports simulator "
                 "evaluators in this initial implementation."
             )
-            raise NotImplementedError(msg)
+            with error_context(ConfigurationError, "build_evaluator"):
+                raise NotImplementedError(msg)
 
         simulator_config = self.config.evaluator.simulator
         if simulator_config is None:
             msg = "Simulator evaluator requires a simulator configuration."
-            raise ValueError(msg)
+            with error_context(ConfigurationError, "build_evaluator"):
+                raise ValueError(msg)
 
-        simulator = self.registry.get(simulator_config.plugin, SimulatorPlugin)
-        simulator.configure(simulator_config)
+        simulator = self._lookup(simulator_config.plugin, SimulatorPlugin)
+        with error_context(ConfigurationError, "configure", simulator_config.plugin):
+            simulator.configure(simulator_config)
         return simulator
+
+    def _lookup(self, plugin_id, contract):
+        with error_context(ConfigurationError, "lookup", plugin_id):
+            return self.registry.get(plugin_id, contract)
 
 
 def _build_problem(config: ProblemConfig) -> Problem:
@@ -185,7 +248,7 @@ def _build_constraint(config: ConstraintConfig) -> Constraint:
 def _extract_records(result: Any) -> tuple[EvaluationRecord, ...]:
     if isinstance(result, EvaluationRecord):
         return (result,)
-    if isinstance(result, Dataset):
+    if isinstance(result, Dataset | OptimizationResult):
         return result.records
     if isinstance(result, list | tuple) and all(
         isinstance(item, EvaluationRecord) for item in result

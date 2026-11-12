@@ -230,6 +230,15 @@ class Dataset:
         return len(self.records)
 
 
+@dataclass(frozen=True)
+class OptimizationResult:
+    """Library-independent optimizer observations and optional observed front."""
+
+    records: tuple[EvaluationRecord, ...] = ()
+    non_dominated_records: tuple[EvaluationRecord, ...] = ()
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
 def _require_name(name: str, label: str) -> None:
     if not name or not name.strip():
         msg = f"{label} name must not be empty."

@@ -14,6 +14,7 @@ from evoforge.config.models import (
     ReportConfig,
     SimulatorConfig,
     SurrogateConfig,
+    SurrogateWorkflowConfig,
     VariableConfig,
     VisualizationConfig,
 )
@@ -33,6 +34,7 @@ __all__ = [
     "ReportConfig",
     "SimulatorConfig",
     "SurrogateConfig",
+    "SurrogateWorkflowConfig",
     "VariableConfig",
     "VisualizationConfig",
     "load_experiment_config",

@@ -1,0 +1,44 @@
+experiment:
+  name: aquacrop_irrigation_ga
+  seed: 42
+problem:
+  name: maize_irrigation_2018
+  type: single_objective
+  variables:
+    - name: smt1
+      type: continuous
+      bounds: [0.0, 100.0]
+    - name: smt2
+      type: continuous
+      bounds: [0.0, 100.0]
+    - name: smt3
+      type: continuous
+      bounds: [0.0, 100.0]
+    - name: smt4
+      type: continuous
+      bounds: [0.0, 100.0]
+  objectives:
+    - name: dry_yield
+      direction: maximize
+optimizer:
+  plugin: pymoo.ga
+  parameters:
+    pop_size: 4
+    n_evaluations: 4
+    seed: 42
+    verbose: false
+evaluator:
+  type: simulator
+  simulator:
+    plugin: aquacrop.irrigation
+    parameters:
+      crop: Maize
+      soil: ClayLoam
+      sim_start_time: "2018-05-01"
+      sim_end_time: "2018-10-31"
+      planting_date: "05/01"
+      initial_water_pct: 70
+      max_irr_season: 300
+      weather_file: champion_climate.txt
+outputs:
+  directory: results/aquacrop_irrigation_ga

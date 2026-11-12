@@ -7,6 +7,7 @@ import yaml
 from evoforge.config import ExperimentConfig
 from evoforge.core import Experiment, ExperimentResult, ExperimentStatus
 from evoforge.domain import EvaluationRecord, Problem, Solution
+from evoforge.errors import ConfigurationError
 from evoforge.plugins import MissingPluginError, PluginRegistry
 
 
@@ -129,9 +130,10 @@ def test_missing_optimizer_plugin_error() -> None:
     registry.register(FakeSimulator())
     experiment = Experiment(config=make_config(), registry=registry)
 
-    with pytest.raises(MissingPluginError, match="fake.optimizer"):
+    with pytest.raises(ConfigurationError, match="fake.optimizer") as captured:
         experiment.run()
 
+    assert isinstance(captured.value.__cause__, MissingPluginError)
     assert experiment.status is ExperimentStatus.FAILED
 
 
@@ -180,3 +182,24 @@ def test_run_creates_deterministic_output_artifacts_using_fake_plugins(
         "metadata",
         "evaluation_records",
     ]
+
+
+def test_runtime_accepts_library_independent_optimizer_result(tmp_path):
+    from evoforge.domain import OptimizationResult
+
+    class ResultOptimizer(FakeOptimizer):
+        def optimize(self, problem, evaluator):
+            record = super().optimize(problem, evaluator)
+            return OptimizationResult(
+                records=(record,),
+                non_dominated_records=(record,),
+                metadata={"evaluator_calls": 1},
+            )
+
+    registry = PluginRegistry()
+    registry.register(ResultOptimizer())
+    registry.register(FakeSimulator())
+    result = Experiment(make_config(str(tmp_path)), registry).run()
+    assert result.non_dominated_records[0] is result.records[0]
+    assert result.reproducibility_metadata["evaluator_calls"] == 1
+    assert Path(result.artifact_paths["non_dominated"]).exists()

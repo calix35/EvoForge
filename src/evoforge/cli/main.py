@@ -10,7 +10,8 @@ from pydantic import ValidationError
 
 from evoforge.adapters.examples import register_builtin_example_plugins
 from evoforge.core import Experiment
-from evoforge.plugins import MissingPluginError, PluginRegistry
+from evoforge.errors import ConfigurationError, EvoForgeError
+from evoforge.plugins import PluginRegistry
 
 app = typer.Typer(help="EvoForge command-line interface.", no_args_is_help=True)
 _plugin_registry: PluginRegistry | None = None
@@ -33,30 +34,26 @@ def run(config_path: Path) -> None:
         )
         experiment = Experiment.from_config(config_path, registry=registry)
         result = experiment.run()
-    except FileNotFoundError:
-        typer.secho(
-            f"Configuration file not found: {config_path}",
-            err=True,
-            fg=typer.colors.RED,
-        )
+    except EvoForgeError as error:
+        prefix = ""
+        if isinstance(error, ConfigurationError):
+            if error.stage == "load_config" and isinstance(
+                error.__cause__, FileNotFoundError
+            ):
+                prefix = f"Configuration file not found: {config_path}. "
+            elif error.stage == "load_config" and isinstance(
+                error.__cause__, yaml.YAMLError
+            ):
+                prefix = "Invalid YAML in configuration file: "
+            elif isinstance(error.__cause__, ValidationError):
+                prefix = "Configuration validation failed: "
+            elif error.stage == "lookup":
+                prefix = "Plugin lookup failed: "
+        typer.secho(prefix + str(error), err=True, fg=typer.colors.RED)
         raise typer.Exit(code=1) from None
-    except yaml.YAMLError as error:
+    except (ValueError, RuntimeError, OSError) as error:
         typer.secho(
-            f"Invalid YAML in configuration file: {error}",
-            err=True,
-            fg=typer.colors.RED,
-        )
-        raise typer.Exit(code=1) from None
-    except ValidationError as error:
-        typer.secho(
-            f"Configuration validation failed:\n{error}",
-            err=True,
-            fg=typer.colors.RED,
-        )
-        raise typer.Exit(code=1) from None
-    except MissingPluginError as error:
-        typer.secho(
-            f"Plugin lookup failed: {error}",
+            f"Execution failed ({type(error).__name__}): {error}",
             err=True,
             fg=typer.colors.RED,
         )
@@ -67,6 +64,11 @@ def run(config_path: Path) -> None:
         f"{result.experiment_id} finished with status {result.status.value}. "
         f"Output directory: {result.output_directory}"
     )
+    if result.status.value == "failed":
+        typer.echo(str(result.reproducibility_metadata.get("termination_reason")))
+        if "error" in result.reproducibility_metadata:
+            typer.echo(result.reproducibility_metadata["error"], err=True)
+        raise typer.Exit(code=1)
 
 
 def main() -> None:
@@ -76,7 +78,12 @@ def main() -> None:
 
 
 def _default_plugin_registry() -> PluginRegistry:
+    from evoforge.adapters.aquacrop import register_aquacrop_plugins
+    from evoforge.adapters.sklearn import register_sklearn_plugins
+
     registry = register_builtin_example_plugins()
+    register_sklearn_plugins(registry)
+    register_aquacrop_plugins(registry)
     try:
         from evoforge.adapters.pymoo import register_pymoo_plugins
     except ImportError:

@@ -30,6 +30,11 @@ papers_private/
 # Test cache
 .pytest_cache/
 .ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+coverage.json
+htmlcov/
 
 # MkDocs
 site/

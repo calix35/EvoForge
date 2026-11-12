@@ -1,4 +1,6 @@
 site_name: EvoForge
+site_url: https://calix35.github.io/EvoForge/
+repo_url: https://github.com/calix35/EvoForge
 site_description: Extensible Framework for Simulation-Based Optimization using Evolutionary Computation and Surrogate Models
 site_author: Alan Diaz Manriquez
 
@@ -20,5 +22,12 @@ nav:
   - Configuration: configuration.md
   - Examples: examples.md
   - Plugins: plugins.md
+  - Plugin Compatibility: plugin_compatibility.md
+  - Errors: errors.md
+  - Multiobjective Optimization: multiobjective.md
+  - AquaCrop Adapter: aquacrop.md
+  - AquaCrop Pilot: aquacrop_pilot.md
   - Architecture: architecture.md
   - Development: development.md
+  - Reproducibility: reproducibility.md
+  - Scaling and Limits: scaling.md
