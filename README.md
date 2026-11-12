@@ -106,6 +106,8 @@ installation, units, climate-data provenance, and third-party license notices.
 The documentation site is hosted at [calix35.github.io/EvoForge](https://calix35.github.io/EvoForge/).
 Version-specific compatibility changes are recorded in [CHANGELOG.md](CHANGELOG.md).
 Citation metadata are provided in [CITATION.cff](CITATION.cff).
+The archived source for release [v0.2.0](https://github.com/calix35/EvoForge/releases/tag/v0.2.0)
+is available at [DOI: 10.5281/zenodo.24176141](https://doi.org/10.5281/zenodo.24176141).
 
 Every persisted experiment records best-effort runtime provenance, plugin
 classes/distribution versions, configured/effective seeds, and available

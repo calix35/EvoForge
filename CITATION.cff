@@ -3,6 +3,8 @@ message: "Please cite the specific software version used in your experiments."
 type: software
 title: "EvoForge"
 version: 0.2.0
+doi: 10.5281/zenodo.24176141
+date-released: 2026-11-12
 license: MIT
 repository-code: "https://github.com/calix35/EvoForge"
 url: "https://calix35.github.io/EvoForge/"
